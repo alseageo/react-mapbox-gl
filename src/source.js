@@ -1,5 +1,7 @@
 import React, { PropTypes } from 'react';
 
+console.log('inside source!!'); // eslint-disable-line
+
 export default class Source extends React.Component {
 
   static contextTypes = {
@@ -21,6 +23,20 @@ export default class Source extends React.Component {
     const { map } = this.context;
     if (!map.getSource(this.id)) {
       map.addSource(this.id, this.source);
+    }
+  }
+
+  componentWillReceiveProps(props) {
+    // console.log('inside componentWillReceiveProps', props); // eslint-disable-line
+    const { map } = this.context;
+    const { data } = this.props.sourceOptions;
+    if (props.sourceOptions.type === 'geojson') {
+      if (props.sourceOptions.data !== data) {
+        const source = map.getSource(this.id);
+        if (source) {
+          source.setData(props.sourceOptions.data);
+        }
+      }
     }
   }
 

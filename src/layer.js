@@ -163,7 +163,7 @@ export default class Layer extends React.PureComponent {
     const { map } = this.context;
 
     map.removeLayer(id);
-    map.removeSource(this.props.sourceId || id);
+    // map.removeSource(this.props.sourceId || id);
 
     map.off('click', this.onClick);
     map.off('mousemove', this.onMouseMove);
@@ -216,4 +216,3 @@ export default class Layer extends React.PureComponent {
     return null;
   }
 }
-
