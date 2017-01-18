@@ -1,6 +1,7 @@
 import MapboxGl from 'mapbox-gl/dist/mapbox-gl.js';
 import React, { Component, PropTypes } from 'react';
 import isEqual from 'deep-equal';
+import { diffStyles } from 'mapbox-gl-style-spec';
 
 const events = {
   onStyleLoad: 'style.load', // Should remain first
@@ -229,7 +230,16 @@ export default class ReactMapboxGl extends Component {
     }
 
     if (!isEqual(this.props.style, nextProps.style)) {
-      map.setStyle(nextProps.style);
+      const changes = diffStyles(this.props.style, nextProps.style);
+      console.log('changes are', changes); // eslint-disable-line
+      try {
+        changes.forEach((change) => {
+          map[change.command](...change.args);
+        });
+      } catch (error) {
+        // if we have any error with individual style changes, reload the full style
+        map.setStyle(nextProps.style);
+      }
     }
 
     return null;
