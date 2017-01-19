@@ -10,7 +10,7 @@ var _class, _temp2, _initialiseProps;
 import MapboxGl from 'mapbox-gl/dist/mapbox-gl.js';
 import React, { Component, PropTypes } from 'react';
 import isEqual from 'deep-equal';
-import { diffStyles } from 'mapbox-gl-style-spec';
+import { diff } from 'mapbox-gl-style-spec';
 
 var events = {
   onStyleLoad: 'style.load', // Should remain first
@@ -175,11 +175,19 @@ var ReactMapboxGl = (_temp2 = _class = function (_Component) {
     }
 
     if (!isEqual(this.props.style, nextProps.style)) {
-      var changes = diffStyles(this.props.style, nextProps.style);
+      var changes = diff(this.props.style, nextProps.style);
       console.log('changes are', changes); // eslint-disable-line
       try {
         changes.forEach(function (change) {
-          map[change.command].apply(map, change.args);
+          if (change.command === 'setData') {
+            var _change$args = change.args,
+                sourceId = _change$args[0],
+                geoJson = _change$args[1];
+
+            map.getSource(sourceId).setData(geoJson);
+          } else {
+            map[change.command].apply(map, change.args);
+          }
         });
       } catch (error) {
         // if we have any error with individual style changes, reload the full style
