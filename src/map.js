@@ -234,7 +234,12 @@ export default class ReactMapboxGl extends Component {
       console.log('changes are', changes); // eslint-disable-line
       try {
         changes.forEach((change) => {
-          map[change.command](...change.args);
+          if (change.command === 'setData') {
+            const [sourceId, geoJson] = change.args;
+            map.getSource(sourceId).setData(geoJson);
+          } else {
+            map[change.command](...change.args);
+          }
         });
       } catch (error) {
         // if we have any error with individual style changes, reload the full style
